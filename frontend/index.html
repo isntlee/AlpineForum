@@ -4,22 +4,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, user-scalable=no">
+    <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>    
     <link rel="stylesheet" href="main.css" type="text/css" />
     <title>Alpine.js - index</title>
 </head>
 
 <body>
-    Is anything working?
+    <div x-data="{ data: null, async fetchData() {
+        const { data: products } = await axios.get('http://127.0.0.1:8000/api/');
 
+        this.data = products;
+        console.log(products);
 
-    <div x-data="{ products: [], loadedYet: false }" x-init="{products} = await (await fetch('http://localhost:8000/api')).json();loadedYet = true"></div>
-        <template x-for="product in products">
-            <div x-text="product.name"></div>
-        </template>
-    </div>
+       }}" x-init="fetchData()">
+ 
+    <template x-for="product in data">
+        <div x-text="product.name"></div>
+    </template>
 
-<script defer src="https://cdnjs.cloudflare.com/ajax/libs/alpinejs/3.13.3/cdn.min.js"></script>
-<script src="/alpine.js"></script>
-
+    </div>  
+   
 </body>
-</html>  
+</html>
