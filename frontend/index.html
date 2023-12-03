@@ -1,1 +1,25 @@
-Is this firing correctly?
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no">
+    <link rel="stylesheet" href="main.css" type="text/css" />
+    <title>Alpine.js - index</title>
+</head>
+
+<body>
+    Is anything working?
+
+
+    <div x-data="{ products: [], loadedYet: false }" x-init="{products} = await (await fetch('http://localhost:8000/api')).json();loadedYet = true"></div>
+        <template x-for="product in products">
+            <div x-text="product.name"></div>
+        </template>
+    </div>
+
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/alpinejs/3.13.3/cdn.min.js"></script>
+<script src="/alpine.js"></script>
+
+</body>
+</html>  
