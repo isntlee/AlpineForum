@@ -22,6 +22,7 @@ class Product(models.Model):
     description = models.TextField()
     producer = models.CharField(max_length=250)
     slug = models.SlugField(max_length=250)
+    image = models.URLField(max_length = 200, null=True, blank=True)
     produced = models.DateTimeField(default=timezone.now)
     active = models.BooleanField(default=True)
     objects = models.Manager()
