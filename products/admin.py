@@ -4,7 +4,7 @@ from . import models
 
 @admin.register(models.Product)
 class ProducerAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'description', 'image', 'active', 'category', 'producer')
+    list_display = ('name', 'id', 'description', 'image_url', 'active', 'category', 'producer')
     prepopulated_fields = {'slug': ('name',), }
 
 
