@@ -1,0 +1,25 @@
+version: "3.9"
+services:
+  web:
+    build: .
+    command: python /app/manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/app
+    ports:
+      - 8000:8000
+    depends_on:
+      - db
+    environment:
+      - "DJANGO_SECRET_KEY=django-insecure-h2q=6%n439z=^vbucaq-=x8=dzk9$3ruyoy9nir(yjr+d3!%_)"
+      - "DJANGO_DEBUG=True"
+
+  db:
+    image: postgres:16-alpine
+    volumes:
+    - postgres_data:/var/lib/postgresql/data/
+    environment:
+    - "POSTGRES_HOST_AUTH_METHOD=trust"
+    - "POSTGRES_DB=alpine_forum"
+
+volumes:
+  postgres_data: {}

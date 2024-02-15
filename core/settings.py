@@ -81,7 +81,7 @@ WSGI_APPLICATION = 'core.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'ENGINE': 'django.db.backends.postgresql',
         'NAME': config('DB_NAME'),
         'USER': config('DB_USER'),
         'PASSWORD': config('DB_PASSWORD'),
@@ -145,6 +145,9 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.AllowAny',
     ]
 }
+
+CELERY_BROKER_URL = 'amqp://guest:guest@localhost:5672//'
+CELERY_RESULT_BACKEND = 'rpc://'
 
 CORS_ALLOW_ALL_ORIGINS = True
 
