@@ -4,7 +4,7 @@ from rest_framework.exceptions import ValidationError
 from django.shortcuts import get_object_or_404
 from django.db.models import Q
 from products.models import Product
-from products import tasks
+from products.tasks import add
 from .serializers import ProductSerializer
 
 
