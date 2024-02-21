@@ -4,6 +4,7 @@ from rest_framework.exceptions import ValidationError
 from django.shortcuts import get_object_or_404
 from django.db.models import Q
 from products.models import Product
+from products import tasks
 from .serializers import ProductSerializer
 
 
@@ -40,6 +41,7 @@ class ProductList(viewsets.ViewSet):
     def update(self, request, pk=None):
         product = get_object_or_404(self.get_queryset(), slug=pk)
         serializer = ProductSerializer(product, data=request.data, partial=True)
+
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
