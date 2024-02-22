@@ -23,12 +23,20 @@ class Product(models.Model):
     producer = models.CharField(max_length=250)
     slug = models.SlugField(max_length=250)
     image_url = models.URLField(max_length = 200, null=True, blank=True)
+    theme_url = models.URLField(max_length = 200, null=True, blank=True)
     produced = models.DateTimeField(default=timezone.now)
     active = models.BooleanField(default=True)
     objects = models.Manager()
     productobjects = ProductObjects()    
     category = models.ForeignKey(
         Category, on_delete=models.PROTECT, default=1)
+    
+    def add_theme(self, file_path):
+        if file_path:
+            self.theme_url = file_path
+            self.save()
+        else: 
+            raise "File path's not right at all"
     
     class Meta:
         ordering = ('-produced',)

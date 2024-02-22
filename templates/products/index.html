@@ -7,7 +7,7 @@
     <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>    
     <link rel="stylesheet" href="main.css" type="text/css" />
-    <title>Alpine.js - index.html</title>
+    <title>index.html</title>
 </head>
 
 <body>
@@ -27,7 +27,15 @@
                 <br>
             </div>
         </template>
-
      </div>
+
+     <br><br>
+
+    {% block content %}
+    <!-- download.html -->
+    {% endblock %}
+
+
 </body>
+
 </html>
