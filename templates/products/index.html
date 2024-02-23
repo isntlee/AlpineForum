@@ -23,7 +23,8 @@
                 <div x-text="product.name"></div>
                 <div x-text="product.description"></div>
                 <div x-text="product.producer"></div>
-                <div x-text="product.image_url"></div>
+                <div x-text="product.theme_url"></div>
+                <div x-text="product.slug"></div>
                 <br>
             </div>
         </template>
@@ -31,9 +32,23 @@
 
      <br><br>
 
-    {% block content %}
-    <!-- download.html -->
-    {% endblock %}
+    <div>
+        <form method="post" action="{% url 'products:find_product' %}">
+            {% csrf_token %}
+            <label for="product_name">Enter Product Name:</label>
+            <input type="text" id="product_name" name="product_name">&nbsp;&nbsp;<input type="submit" value="Find">   
+        </form>
+    <br>
+    <form method="post" action="{% url 'products:download' %}">
+            {% csrf_token %}
+            <label for="link">Enter Theme URL:</label>
+            <input type="text" id="link" name="link">&nbsp;&nbsp;<input type="submit" value="Download">   
+        </form>
+    </div>
+
+     
+
+    
 
 
 </body>

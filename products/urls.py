@@ -1,10 +1,12 @@
 from django.urls import path
 from django.views.generic import TemplateView
-from . import views
+from products import views
+
 
 app_name = 'products'
 
 urlpatterns = [
     path ('', TemplateView.as_view(template_name='products/index.html')),
-    path('download', views.download_video, name='download_video'),
+    path('download', views.download, name='download'),
+    path('find_product', views.find_product, name='find_product'),
 ]
