@@ -151,3 +151,5 @@ CORS_ALLOW_ALL_ORIGINS = True
 # ]
 
 CELERY_BROKER_URL = 'amqp://guest:guest@localhost:5672/'
+DEFAULT_FILE_STORAGE = 'storages.backends.dropbox.DropBoxStorage'
+DROPBOX_OAUTH2_TOKEN = config("DROPBOX_OAUTH2_TOKEN")
