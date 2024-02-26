@@ -1,11 +1,12 @@
-from django.shortcuts import render
-from pytube import YouTube
-from .models import Product
-from django.shortcuts import get_object_or_404
-import re
+import os, re, dropbox
+
+from django.shortcuts import render, get_object_or_404
 from moviepy.video.io.ffmpeg_tools import ffmpeg_extract_subclip
-from django.core.files.storage import default_storage
-from django.core.files.base import ContentFile
+from pytube import YouTube
+
+from .models import Product
+from core.settings import DROPBOX_ACCESS_KEY
+
 
 
 
@@ -24,26 +25,32 @@ def download(request):
         return render(request, 'products/index.html')
     
 
+
 def clip_audio(file_path):
     
     input_audio_path = file_path
     output_audio_path = file_path[:-5] + '.mp4'
-    ffmpeg_extract_subclip(input_audio_path,  0,  30, targetname=output_audio_path) 
 
-    if default_storage.exists(input_audio_path):
-        default_storage.delete(input_audio_path)
+    ffmpeg_extract_subclip(input_audio_path,  0,  30, targetname=output_audio_path) 
 
     with open(output_audio_path, 'rb') as file:
         file_content = file.read()
     
     file_name = output_audio_path.split('/')[-1]
+    last_slash_index = input_audio_path.rfind("\\") + 1
+    file_name = '/' + input_audio_path[last_slash_index:]
 
-    print("\n\n...file_name", file_name, '\n\n')
+    dbx = dropbox.Dropbox(DROPBOX_ACCESS_KEY)
 
-    default_storage.save(file_name, ContentFile(file_content))
-    
-    return output_audio_path
+    try:
+        dbx.files_upload(file_content, file_name, mode=dropbox.files.WriteMode('overwrite'))
+        print("\n\nFile uploaded successfully to Dropbox.")
+    except dropbox.exceptions.ApiError as e:
+        print(f"Error uploading file: {e}")
 
+    for path in [input_audio_path, output_audio_path]:
+        if os.path.isfile(path):
+            os.remove(path)
 
 
 
