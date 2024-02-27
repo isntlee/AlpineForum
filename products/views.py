@@ -1,12 +1,14 @@
-import os, re, dropbox
+import os, re, dropbox, requests
 
 from django.shortcuts import render, get_object_or_404
 from moviepy.video.io.ffmpeg_tools import ffmpeg_extract_subclip
 from pytube import YouTube
+from dotenv import load_dotenv
+from pathlib import Path 
 
 from .models import Product
-from core.settings import DROPBOX_ACCESS_KEY
 
+from core.settings import DROPBOX_ACCESS_KEY, DROPBOX_OAUTH2_REFRESH_TOKEN, DROPBOX_APP_KEY, DROPBOX_APP_SECRET
 
 
 
@@ -23,7 +25,23 @@ def download(request):
         return render(request, 'products/index.html')
     else:
         return render(request, 'products/index.html')
-    
+
+
+def refresh_access_token(refresh_token, app_key, app_secret):
+    token_url = "https://api.dropboxapi.com/oauth2/token"
+    params = {
+        "grant_type": "refresh_token",
+        "refresh_token": refresh_token,
+        "client_id": app_key,
+        "client_secret": app_secret
+    }
+    response = requests.post(token_url, params=params)
+    if response.status_code ==  200:
+        new_access_token = response.json().get('access_token')
+        print("New access token:", new_access_token)
+    else:
+        print("Failed to refresh access token:", response.text)
+    return new_access_token
 
 
 def clip_audio(file_path):
@@ -40,14 +58,29 @@ def clip_audio(file_path):
     last_slash_index = input_audio_path.rfind("\\") + 1
     file_name = '/' + input_audio_path[last_slash_index:]
 
-    dbx = dropbox.Dropbox(DROPBOX_ACCESS_KEY)
-
     try:
-        dbx.files_upload(file_content, file_name, mode=dropbox.files.WriteMode('overwrite'))
-        print("\n\nFile uploaded successfully to Dropbox.")
-    except dropbox.exceptions.ApiError as e:
-        print(f"Error uploading file: {e}")
+        dbx = dropbox.Dropbox(DROPBOX_ACCESS_KEY)
+        url_name = dbx.files_upload(file_content, file_name, mode=dropbox.files.WriteMode('overwrite'))
+        
+    except dropbox.exceptions.AuthError:
+        new_access_token = refresh_access_token(DROPBOX_OAUTH2_REFRESH_TOKEN, DROPBOX_APP_KEY, DROPBOX_APP_SECRET)
+        env_path = Path('.') / '.env'
 
+        try:
+            load_dotenv(dotenv_path=env_path) 
+        except Exception as e:
+            print(f"Failed to load .env file: {e}")
+
+        try:
+            with open('.env', 'a') as env_file:
+                env_file.write(f'\nDROPBOX_ACCESS_KEY= {new_access_token}')
+        except Exception as e:
+            print(f"Failed to append to .env file: {e}")
+
+        dbx = dropbox.Dropbox(new_access_token)
+        url_name = dbx.files_upload(file_content, file_name, mode=dropbox.files.WriteMode('overwrite'))
+        print('\n\n', url_name)
+        
     for path in [input_audio_path, output_audio_path]:
         if os.path.isfile(path):
             os.remove(path)
