@@ -58,28 +58,36 @@ def clip_audio(file_path):
     last_slash_index = input_audio_path.rfind("\\") + 1
     file_name = '/' + input_audio_path[last_slash_index:]
 
-    try:
-        dbx = dropbox.Dropbox(DROPBOX_ACCESS_KEY)
-        url_name = dbx.files_upload(file_content, file_name, mode=dropbox.files.WriteMode('overwrite'))
-        
-    except dropbox.exceptions.AuthError:
-        new_access_token = refresh_access_token(DROPBOX_OAUTH2_REFRESH_TOKEN, DROPBOX_APP_KEY, DROPBOX_APP_SECRET)
-        env_path = Path('.') / '.env'
+    
+    dbx = dropbox.Dropbox(DROPBOX_ACCESS_KEY)
+    url_name = dbx.files_upload(file_content, file_name, mode=dropbox.files.WriteMode('overwrite'))
 
-        try:
-            load_dotenv(dotenv_path=env_path) 
-        except Exception as e:
-            print(f"Failed to load .env file: {e}")
+    print('\n\n###Testing1###\n\n')
 
-        try:
-            with open('.env', 'a') as env_file:
-                env_file.write(f'\nDROPBOX_ACCESS_KEY= {new_access_token}')
-        except Exception as e:
-            print(f"Failed to append to .env file: {e}")
+    shared_link = dbx.sharing_create_shared_link_with_settings(file_name)
 
-        dbx = dropbox.Dropbox(new_access_token)
-        url_name = dbx.files_upload(file_content, file_name, mode=dropbox.files.WriteMode('overwrite'))
-        print('\n\n', url_name)
+    print('\n\n###Testing2###\n\n')
+
+    # print('\n\n', url_name, '\n\n')
+    # print('\n\n', shared_link, '\n\n')
+    
+    # except dropbox.exceptions.AuthError:
+    #     new_access_token = refresh_access_token(DROPBOX_OAUTH2_REFRESH_TOKEN, DROPBOX_APP_KEY, DROPBOX_APP_SECRET)
+    #     env_path = Path('.') / '.env'
+
+    #     try:
+    #         load_dotenv(dotenv_path=env_path) 
+    #     except Exception as e:
+    #         print(f"Failed to load .env file: {e}")
+
+    #     try:
+    #         with open('.env', 'a') as env_file:
+    #             env_file.write(f'\nDROPBOX_ACCESS_KEY= {new_access_token}')
+    #     except Exception as e:
+    #         print(f"Failed to append to .env file: {e}")
+
+        # dbx = dropbox.Dropbox(new_access_token)
+        # url_name = dbx.files_upload(file_content, file_name, mode=dropbox.files.WriteMode('overwrite'))
         
     for path in [input_audio_path, output_audio_path]:
         if os.path.isfile(path):
