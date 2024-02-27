@@ -62,32 +62,36 @@ def clip_audio(file_path):
     dbx = dropbox.Dropbox(DROPBOX_ACCESS_KEY)
     url_name = dbx.files_upload(file_content, file_name, mode=dropbox.files.WriteMode('overwrite'))
 
-    print('\n\n###Testing1###\n\n')
+    # print('\n\n###Testing1###\n\n')
 
-    shared_link = dbx.sharing_create_shared_link_with_settings(file_name)
+    try:    
+        shared_link = dbx.sharing_create_shared_link_with_settings(file_name)
 
-    print('\n\n###Testing2###\n\n')
+        # print('\n\n###Testing2###\n\n')
+        # print('\n\n', url_name, '\n\n')
+        # print('\n\n', shared_link.url, '\n\n')
 
-    # print('\n\n', url_name, '\n\n')
-    # print('\n\n', shared_link, '\n\n')
+        return shared_link.url
+        
     
-    # except dropbox.exceptions.AuthError:
-    #     new_access_token = refresh_access_token(DROPBOX_OAUTH2_REFRESH_TOKEN, DROPBOX_APP_KEY, DROPBOX_APP_SECRET)
-    #     env_path = Path('.') / '.env'
+    except dropbox.exceptions.AuthError:
+        # print('\n\n###Testing3###\n\n')
+        new_access_token = refresh_access_token(DROPBOX_OAUTH2_REFRESH_TOKEN, DROPBOX_APP_KEY, DROPBOX_APP_SECRET)
+        env_path = Path('.') / '.env'
 
-    #     try:
-    #         load_dotenv(dotenv_path=env_path) 
-    #     except Exception as e:
-    #         print(f"Failed to load .env file: {e}")
+        try:
+            load_dotenv(dotenv_path=env_path) 
+        except Exception as e:
+            print(f"Failed to load .env file: {e}")
 
-    #     try:
-    #         with open('.env', 'a') as env_file:
-    #             env_file.write(f'\nDROPBOX_ACCESS_KEY= {new_access_token}')
-    #     except Exception as e:
-    #         print(f"Failed to append to .env file: {e}")
+        try:
+            with open('.env', 'a') as env_file:
+                env_file.write(f'\nDROPBOX_ACCESS_KEY= {new_access_token}')
+        except Exception as e:
+            print(f"Failed to append to .env file: {e}")
 
-        # dbx = dropbox.Dropbox(new_access_token)
-        # url_name = dbx.files_upload(file_content, file_name, mode=dropbox.files.WriteMode('overwrite'))
+        dbx = dropbox.Dropbox(new_access_token)
+        url_name = dbx.files_upload(file_content, file_name, mode=dropbox.files.WriteMode('overwrite'))
         
     for path in [input_audio_path, output_audio_path]:
         if os.path.isfile(path):
